@@ -4,11 +4,13 @@ const pool = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./utils/errorHandler');
 
+const PORT = process.env.PORT || 3000
+
 app.use('/auth', authRoutes);
 
 app.use(errorHandler);
 
-app.listen(process.env.PORT || 3000, async () => {
+app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
 
     try {
