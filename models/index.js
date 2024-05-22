@@ -23,4 +23,6 @@ database.Sequelize = Sequelize;
 database.Op = Op;
 database.sequelize = sequelize;
 
+database.user = require("./userModel")(sequelize, Sequelize, DataTypes);
+
 module.exports = database;
