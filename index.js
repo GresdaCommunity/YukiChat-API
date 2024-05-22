@@ -1,29 +1,38 @@
 require('dotenv').config();
-const app = require('./config/middleware');
-const pool = require('./config/database');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./utils/errorHandler');
+const myLogger = require('./utils/logger');
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
-app.use('/auth', authRoutes);
+const app = express();
+
+app.use(cors());
+app.use(helmet());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+if (process.env.LOGGING === "true") {
+    app.use(myLogger({ upperCase: false }));
+}
+
+try {
+    app.use('/auth', authRoutes);
+} catch (error) {
+    console.log(error);
+    return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: error.message
+    });
+}
 
 app.use(errorHandler);
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
-
-    try {
-        const connection = await pool.getConnection();
-
-        if (await connection.ping()) {
-            console.log('Successfully connected to the database');
-        } else {
-            console.log('Failed connection to database');
-        }
-
-        connection.release();
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
 });
