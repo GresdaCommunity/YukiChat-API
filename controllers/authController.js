@@ -78,4 +78,4 @@ const register = async (req, res) => {
     });
 };
 
-module.exports = { login, register, checkToken };
+module.exports = { login, register };
